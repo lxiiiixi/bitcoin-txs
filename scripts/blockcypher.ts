@@ -19,34 +19,12 @@ export const BLOCKCYPHER_TOKEN = process.env.BC_TOKEN as string;
 
 export async function fetchUTXOs(address: string) {
     const url = `https://api.blockcypher.com/v1/btc/test3/addrs/${address}?unspentOnly=true&includeScript=true&token=${BLOCKCYPHER_TOKEN}`;
-    console.log(`[BlockCypher] fetchUTXOs url: ${url}`);
     const res = await fetch(url);
     if (!res.ok) throw new Error(`fetch utxo failed ${res.status}`);
     const j = await res.json();
     console.log(`[BlockCypher] fetchUTXOs response of ${address}:`, JSON.stringify(j, null, 2));
     // BlockCypher 返回：txrefs 数组（也可能是 empty），字段: tx_hash, tx_output_n, value, script
     return (j as any).txrefs || ([] as UTXO[]);
-}
-
-export function selectUTXOs(
-    utxos: UTXO[],
-    targetPlusFee: bigint
-): { chosen: UTXO[]; sum: bigint } | null {
-    // 简单贪心选币（从大到小），生产环境用更好策略
-    utxos.sort((a, b) => {
-        if (a.value > b.value) return -1;
-        if (a.value < b.value) return 1;
-        return 0;
-    });
-    const chosen: UTXO[] = [];
-    let sum: bigint = BigInt(0);
-    for (const u of utxos) {
-        chosen.push(u);
-        sum += BigInt(u.value);
-        if (sum >= targetPlusFee) break;
-    }
-    if (sum < targetPlusFee) return null;
-    return { chosen, sum };
 }
 
 export async function broadcastTransaction(txHex: string, network: Network = Network.TESTNET) {

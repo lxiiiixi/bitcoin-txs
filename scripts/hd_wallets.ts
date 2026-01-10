@@ -12,6 +12,7 @@ const network = bitcoin.networks.testnet;
 
 // 1. 生成助记词
 // const mnemonic = bip39.generateMnemonic();
+// console.log("New generated mnemonic:", mnemonic);
 const mnemonic = process.env.MNEMONIC as string; // 如果已经创建了
 
 // 2. 助记词 -> seed
@@ -67,7 +68,6 @@ export async function deriveFromMnemonic() {
 
         // Q 什么是硬化路径？
         // 带 ' 的叫硬化路径，如 84'，只能从 私钥（xprv） 派生，保护私钥不被暴露。
-        // 如果 xpub 派生私钥，那么钱包就能被黑。
         const child = root.derivePath(path);
 
         const { address } = bitcoin.payments.p2wpkh({

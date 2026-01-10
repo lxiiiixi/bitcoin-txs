@@ -34,7 +34,7 @@ export async function broadcastTransaction(txHex: string, network: Network = Net
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ tx: txHex }),
     });
-    if (!res.ok) throw new Error(`broadcast transaction failed ${res.status}`);
+    if (!res.ok) throw new Error(`broadcast transaction failed ${res.status}(${await res.text()})`);
     const j = await res.json();
     return j;
 }

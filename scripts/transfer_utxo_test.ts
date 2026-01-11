@@ -210,7 +210,7 @@ async function transferByAlchemy(
     });
     // sign
     const keyPair = await getKeyPair(senderAccount.index);
-    psbt.signInput(senderAccount.index, keyPair);
+    psbt.signInput(0, keyPair);
     psbt.finalizeAllInputs();
 
     const rawTx = psbt.extractTransaction().toHex();
